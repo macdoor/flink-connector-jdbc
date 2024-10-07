@@ -157,7 +157,10 @@ public class PostgresCatalog extends AbstractJdbcCatalog {
             // get all schemas
             List<String> schemas;
             try (PreparedStatement ps =
-                    conn.prepareStatement("SELECT schema_name FROM information_schema.schemata;")) {
+                    // conn.prepareStatement("SELECT schema_name FROM
+                    // information_schema.schemata;")) {
+                    conn.prepareStatement(
+                            "SELECT nspname schema_name FROM pg_catalog.pg_namespace;")) {
                 schemas =
                         extractColumnValuesByStatement(
                                 ps, 1, pgSchema -> !getBuiltinSchemas().contains(pgSchema));
