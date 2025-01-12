@@ -54,16 +54,16 @@ public abstract class AbstractPostgresCompatibleDialect extends AbstractDialect 
                 Arrays.stream(uniqueKeyFields)
                         .map(this::quoteIdentifier)
                         .collect(Collectors.joining(", "));
+        final Set<String> uniqueKeyFieldsSet =
+                Arrays.stream(uniqueKeyFields).collect(Collectors.toSet());
         String updateClause =
                 Arrays.stream(fieldNames)
+                        .filter(f -> !uniqueKeyFieldsSet.contains(f))
                         .map(f -> quoteIdentifier(f) + "=EXCLUDED." + quoteIdentifier(f))
                         .collect(Collectors.joining(", "));
         return Optional.of(
                 getInsertIntoStatement(tableName, fieldNames)
-                        + " ON CONFLICT ("
-                        + uniqueColumns
-                        + ")"
-                        + " DO UPDATE SET "
+                        + " ON DUPLICATE KEY UPDATE "
                         + updateClause);
     }
 
