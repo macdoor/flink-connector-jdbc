@@ -54,6 +54,8 @@ public class PostgresTypeMapper implements JdbcCatalogTypeMapper {
     protected static final String PG_BIGSERIAL = "bigserial";
     private static final String PG_BYTEA = "bytea";
     private static final String PG_BYTEA_ARRAY = "_bytea";
+    private static final String PG_TINYINT = "int1";
+    private static final String PG_TINYINT_ARRAY = "_int1";
     private static final String PG_SMALLINT = "int2";
     private static final String PG_SMALLINT_ARRAY = "_int2";
     private static final String PG_INTEGER = "int4";
@@ -111,6 +113,10 @@ public class PostgresTypeMapper implements JdbcCatalogTypeMapper {
                 return DataTypes.BYTES();
             case PG_BYTEA_ARRAY:
                 return DataTypes.ARRAY(DataTypes.BYTES());
+            case PG_TINYINT:
+                return DataTypes.TINYINT();
+            case PG_TINYINT_ARRAY:
+                return DataTypes.ARRAY(DataTypes.TINYINT());
             case PG_SMALLINT:
             case PG_SMALLSERIAL:
                 return DataTypes.SMALLINT();
@@ -161,16 +167,34 @@ public class PostgresTypeMapper implements JdbcCatalogTypeMapper {
             case PG_TEXT_ARRAY:
                 return DataTypes.ARRAY(DataTypes.STRING());
             case PG_TIMESTAMP:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.TIMESTAMP(scale);
             case PG_TIMESTAMP_ARRAY:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.ARRAY(DataTypes.TIMESTAMP(scale));
             case PG_TIMESTAMPTZ:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.TIMESTAMP_WITH_LOCAL_TIME_ZONE(scale);
             case PG_TIMESTAMPTZ_ARRAY:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.ARRAY(DataTypes.TIMESTAMP_WITH_LOCAL_TIME_ZONE(scale));
             case PG_TIME:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.TIME(scale);
             case PG_TIME_ARRAY:
+                if (scale < 3) {
+                    scale = 3;
+                }
                 return DataTypes.ARRAY(DataTypes.TIME(scale));
             case PG_DATE:
                 return DataTypes.DATE();
