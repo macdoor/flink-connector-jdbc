@@ -27,6 +27,8 @@ import org.apache.flink.table.types.logical.LogicalTypeRoot;
 import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.table.types.logical.utils.LogicalTypeUtils;
 
+import org.postgresql.util.PGobject;
+
 import java.lang.reflect.Array;
 
 /**
@@ -35,7 +37,6 @@ import java.lang.reflect.Array;
  */
 @Internal
 public class PostgresDialectConverter extends AbstractDialectConverter {
-
     private static final long serialVersionUID = 1L;
 
     protected PostgresDialectConverter(RowType rowType) {
@@ -46,11 +47,15 @@ public class PostgresDialectConverter extends AbstractDialectConverter {
     public JdbcDeserializationConverter createInternalConverter(LogicalType type) {
         LogicalTypeRoot root = type.getTypeRoot();
 
-        if (root == LogicalTypeRoot.ARRAY) {
-            ArrayType arrayType = (ArrayType) type;
-            return createPostgresArrayConverter(arrayType);
-        } else {
-            return createPrimitiveConverter(type);
+        switch (type.getTypeRoot()) {
+            case ARRAY:
+                ArrayType arrayType = (ArrayType) type;
+                return createPostgresArrayConverter(arrayType);
+            case TINYINT:
+                return val ->
+                        val instanceof PGobject ? Byte.parseByte(((PGobject) val).getValue()) : val;
+            default:
+                return createPrimitiveConverter(type);
         }
     }
 

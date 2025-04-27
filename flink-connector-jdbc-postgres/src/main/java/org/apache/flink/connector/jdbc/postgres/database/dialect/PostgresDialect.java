@@ -81,14 +81,10 @@ public class PostgresDialect extends AbstractDialect {
                         .map(f -> quoteIdentifier(f) + "=EXCLUDED." + quoteIdentifier(f))
                         .collect(Collectors.joining(", "));
         String conflictAction =
-                updateClause.isEmpty()
-                        ? " DO NOTHING"
-                        : String.format(" DO UPDATE SET %s", updateClause);
+                updateClause.isEmpty() ? " DO NOTHING" : String.format(" %s", updateClause);
         return Optional.of(
                 getInsertIntoStatement(tableName, fieldNames)
-                        + " ON CONFLICT ("
-                        + uniqueColumns
-                        + ")"
+                        + " ON DUPLICATE KEY UPDATE "
                         + conflictAction);
     }
 
